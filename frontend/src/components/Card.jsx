@@ -72,6 +72,25 @@ function Card() {
     setIsEditing(false);
   };
 
+  const handleSaveEditedTask = () => {
+    axios
+      .put(
+        `https://64e48df4c555638029136b4f.mockapi.io/tasks/${editedTask.id}`,
+        editedTask
+      )
+      .then((response) => {
+        const updatedTasks = tasks.map((task) =>
+          task.id === editedTask.id ? editedTask : task
+        );
+        setTasks(updatedTasks);
+        setEditedTask(null);
+        setIsEditing(false);
+      })
+      .catch((error) => {
+        console.error("Error updating task:", error);
+      });
+  };
+
   return (
     <div>
       <StyledContainer>
@@ -186,6 +205,7 @@ function Card() {
                   }
                 ></input>
               </label>
+              <button onClick={handleSaveEditedTask}>Save</button>
               <button onClick={handleCancelEditedTask}>Cancel</button>
             </StyledForm>
           ) : (
