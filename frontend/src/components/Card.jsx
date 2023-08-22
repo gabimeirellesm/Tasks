@@ -46,6 +46,18 @@ function Card() {
       });
   };
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTask, setEditedTask] = useState(null);
+
+  const handleEditTask = (task) => {
+    setEditedTask({ ...task });
+    setIsEditing(true);
+  };
+
+  const handleCancelEditedTask = () => {
+    setIsEditing(false);
+  };
+
   return (
     <div>
       <StyledContainer>
@@ -99,15 +111,80 @@ function Card() {
           </button>
         </StyledForm>
         <StyledGrid>
-          {tasks.map((task) => (
-            <StyledCard key={task.id}>
-              <h2>{task.title}</h2>
-              <p>{task.description}</p>
-              <p>Created at: {task.created}</p>
-              <p>Deadline: {task.deadline}</p>
-              <p>Status: {task.status}</p>
-            </StyledCard>
-          ))}
+          {isEditing ? (
+            <StyledForm>
+              <label>
+                Title:
+                <input
+                  type="text"
+                  name="title"
+                  value={editedTask.title}
+                  onChange={(e) =>
+                    setEditedTask({ ...editedTask, title: e.target.value })
+                  }
+                ></input>
+              </label>
+              <label>
+                Description:
+                <input
+                  type="text"
+                  name="description"
+                  value={editedTask.description}
+                  onChange={(e) =>
+                    setEditedTask({
+                      ...editedTask,
+                      description: e.target.value,
+                    })
+                  }
+                ></input>
+              </label>
+              <label>
+                Created at:
+                <input
+                  type="text"
+                  name="created"
+                  value={editedTask.created}
+                  onChange={(e) =>
+                    setEditedTask({ ...editedTask, created: e.target.value })
+                  }
+                ></input>
+              </label>
+              <label>
+                Deadline:
+                <input
+                  type="text"
+                  name="deadline"
+                  value={editedTask.deadline}
+                  onChange={(e) =>
+                    setEditedTask({ ...editedTask, deadline: e.target.value })
+                  }
+                ></input>
+              </label>
+              <label>
+                Status
+                <input
+                  type="text"
+                  name="status"
+                  value={editedTask.status}
+                  onChange={(e) =>
+                    setEditedTask({ ...editedTask, status: e.target.value })
+                  }
+                ></input>
+              </label>
+              <button onClick={handleCancelEditedTask}>Cancel</button>
+            </StyledForm>
+          ) : (
+            tasks.map((task) => (
+              <StyledCard key={task.id}>
+                <h2>{task.title}</h2>
+                <p>{task.description}</p>
+                <p>Created at: {task.created}</p>
+                <p>Deadline: {task.deadline}</p>
+                <p>Status: {task.status}</p>
+                <button onClick={() => handleEditTask(task)}>Edit Task</button>
+              </StyledCard>
+            ))
+          )}
         </StyledGrid>
       </StyledContainer>
     </div>
