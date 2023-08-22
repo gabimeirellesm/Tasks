@@ -40,10 +40,24 @@ function Card() {
         const createdTask = response.data;
         setTasks([...tasks, createdTask]);
         setNewTask(createdTask);
+
+        setTitle("");
+        setDescription("");
+        setCreatedAt("");
+        setDeadline("");
+        setStatus("");
       })
       .catch((error) => {
         console.error("Error creating task:", error);
       });
+  };
+
+  const handleCancelCreateTask = () => {
+    setTitle("");
+    setDescription("");
+    setCreatedAt("");
+    setDeadline("");
+    setStatus("");
   };
 
   const [isEditing, setIsEditing] = useState(false);
@@ -109,6 +123,7 @@ function Card() {
           <button type="button" onClick={handleCreateTask}>
             Create Task
           </button>
+          <button onClick={handleCancelCreateTask}>Clear</button>
         </StyledForm>
         <StyledGrid>
           {isEditing ? (
