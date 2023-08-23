@@ -91,18 +91,16 @@ function Card() {
     handleSaveEditedTask();
   }, [editedTask]);
 
-  const handleDeleteTask = () => {
-    axios
-      .delete(`https://64e48df4c555638029136b4f.mockapi.io/tasks/${tasks.id}`)
-      .then((response) => {
-        const updatedTasks = tasks.filter((task) => task.id !== editedTask.id);
-        setTasks(updatedTasks);
-        setEditedTask(null);
-        setIsEditing(false);
-      })
-      .catch((error) => {
+  const handleDeleteTask = async () => {
+    if (editedTask || newTask) {
+      try {
+        await axios.delete(
+          `https://64e48df4c555638029136b4f.mockapi.io/tasks/${editedTask.id}`
+        );
+      } catch (error) {
         console.error("Error deleting task:", error);
-      });
+      }
+    }
   };
 
   const handleCancelEditedTask = () => {
