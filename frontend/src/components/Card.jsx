@@ -24,12 +24,15 @@ function Card() {
   const [status, setStatus] = useState("");
   const [newTask, setNewTask] = useState(null);
   const currentDate = new Date();
+  const formattedDate = `${currentDate.getFullYear()}-${String(
+    currentDate.getMonth() + 1
+  ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
 
   const handleCreateTask = () => {
     const taskData = {
       title: title,
       description: description,
-      created: currentDate.toISOString(),
+      created: formattedDate,
       deadline: deadline,
       status: status,
     };
