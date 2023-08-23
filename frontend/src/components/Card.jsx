@@ -74,10 +74,7 @@ function Card() {
 
   const handleSaveEditedTask = () => {
     axios
-      .put(
-        `https://64e48df4c555638029136b4f.mockapi.io/tasks/${editedTask.id}`,
-        editedTask
-      )
+      .put(`https://64e48df4c555638029136b4f.mockapi.io/tasks/1`)
       .then((response) => {
         const updatedTasks = tasks.map((task) =>
           task.id === editedTask.id ? editedTask : task
@@ -89,6 +86,13 @@ function Card() {
       .catch((error) => {
         console.error("Error updating task:", error);
       });
+  };
+
+  const handleDeleteEditedTask = () => {
+    axios.delete(
+      `https://64e48df4c555638029136b4f.mockapi.io/tasks/1`,
+      editedTask
+    );
   };
 
   return (
@@ -139,10 +143,10 @@ function Card() {
             />
           </label>
           <br />
-          <button type="button" onClick={handleCreateTask}>
+          <Button type="button" onClick={handleCreateTask}>
             Create Task
-          </button>
-          <button onClick={handleCancelCreateTask}>Clear</button>
+          </Button>
+          <DeleteButton onClick={handleCancelCreateTask}>Clear</DeleteButton>
         </StyledForm>
         <StyledGrid>
           {isEditing ? (
@@ -205,8 +209,11 @@ function Card() {
                   }
                 ></input>
               </label>
-              <button onClick={handleSaveEditedTask}>Save</button>
-              <button onClick={handleCancelEditedTask}>Cancel</button>
+              <Button onClick={handleSaveEditedTask}>Save</Button>
+              <Button onClick={handleCancelEditedTask}>Cancel</Button>
+              <DeleteButton onClick={handleDeleteEditedTask}>
+                Delete
+              </DeleteButton>
             </StyledForm>
           ) : (
             tasks.map((task) => (
@@ -216,7 +223,7 @@ function Card() {
                 <p>Created at: {task.created}</p>
                 <p>Deadline: {task.deadline}</p>
                 <p>Status: {task.status}</p>
-                <button onClick={() => handleEditTask(task)}>Edit Task</button>
+                <Button onClick={() => handleEditTask(task)}>Edit Task</Button>
               </StyledCard>
             ))
           )}
@@ -233,8 +240,8 @@ const StyledCard = styled.div`
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   width: 10vw;
-  height: 20vh;
   margin-top: 16px;
+  margin-bottom: 16px;
 
   h2 {
     margin-top: 0;
@@ -277,18 +284,28 @@ const StyledForm = styled.form`
     border-radius: 3px;
     margin-bottom: 16px;
   }
+`;
 
-  button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    padding: 10px 20px;
-    cursor: pointer;
-  }
+const Button = styled.button`
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  padding: 0.5vw 1vh;
+  cursor: pointer;
+  margin-right: 16px;
+  font-size: 70%;
 
-  button:hover {
+  &:hover {
     background-color: #0056b3;
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  background-color: #dc3545;
+
+  &:hover {
+    background-color: #c82333;
   }
 `;
 
