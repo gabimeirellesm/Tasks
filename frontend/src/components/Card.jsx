@@ -20,16 +20,16 @@ function Card() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [createdAt, setCreatedAt] = useState("");
   const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState("");
   const [newTask, setNewTask] = useState(null);
+  const currentDate = new Date();
 
   const handleCreateTask = () => {
     const taskData = {
       title: title,
       description: description,
-      created: createdAt,
+      created: currentDate.toISOString(),
       deadline: deadline,
       status: status,
     };
@@ -43,7 +43,6 @@ function Card() {
 
         setTitle("");
         setDescription("");
-        setCreatedAt("");
         setDeadline("");
         setStatus("");
       })
@@ -55,7 +54,6 @@ function Card() {
   const handleCancelCreateTask = () => {
     setTitle("");
     setDescription("");
-    setCreatedAt("");
     setDeadline("");
     setStatus("");
   };
@@ -129,15 +127,6 @@ function Card() {
           </label>
           <br />
           <label>
-            Created At:
-            <input
-              type="text"
-              value={createdAt}
-              onChange={(e) => setCreatedAt(e.target.value)}
-            />
-          </label>
-          <br />
-          <label>
             Deadline:
             <input
               type="text"
@@ -194,9 +183,7 @@ function Card() {
                   type="text"
                   name="created"
                   value={editedTask.created}
-                  onChange={(e) =>
-                    setEditedTask({ ...editedTask, created: e.target.value })
-                  }
+                  readOnly
                 ></input>
               </label>
               <label>
