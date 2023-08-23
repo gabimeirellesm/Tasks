@@ -66,33 +66,47 @@ function Card() {
   const handleEditTask = (task) => {
     setEditedTask({ ...task });
     setIsEditing(true);
+    console.log(task.id);
   };
 
-  const handleCancelEditedTask = () => {
-    setIsEditing(false);
-  };
+  const [updatedAt, setUpdatedAt] = useState(null);
 
-  const handleSaveEditedTask = () => {
-    axios
-      .put(`https://64e48df4c555638029136b4f.mockapi.io/tasks/1`)
-      .then((response) => {
-        const updatedTasks = tasks.map((task) =>
-          task.id === editedTask.id ? editedTask : task
+  const handleSaveEditedTask = async () => {
+    if (editedTask) {
+      const editedTaskId = editedTask.id;
+
+      try {
+        const response = await axios.put(
+          `https://64e48df4c555638029136b4f.mockapi.io/tasks/${editedTaskId}`,
+          editedTask
         );
+        setUpdatedAt(response.data.updatedAt);
+      } catch (error) {
+        console.error("Error updating task:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleSaveEditedTask();
+  }, [editedTask]);
+
+  const handleDeleteTask = () => {
+    axios
+      .delete(`https://64e48df4c555638029136b4f.mockapi.io/tasks/${tasks.id}`)
+      .then((response) => {
+        const updatedTasks = tasks.filter((task) => task.id !== editedTask.id);
         setTasks(updatedTasks);
         setEditedTask(null);
         setIsEditing(false);
       })
       .catch((error) => {
-        console.error("Error updating task:", error);
+        console.error("Error deleting task:", error);
       });
   };
 
-  const handleDeleteEditedTask = () => {
-    axios.delete(
-      `https://64e48df4c555638029136b4f.mockapi.io/tasks/1`,
-      editedTask
-    );
+  const handleCancelEditedTask = () => {
+    setIsEditing(false);
   };
 
   return (
@@ -211,9 +225,7 @@ function Card() {
               </label>
               <Button onClick={handleSaveEditedTask}>Save</Button>
               <Button onClick={handleCancelEditedTask}>Cancel</Button>
-              <DeleteButton onClick={handleDeleteEditedTask}>
-                Delete
-              </DeleteButton>
+              <DeleteButton onClick={handleDeleteTask}>Delete</DeleteButton>
             </StyledForm>
           ) : (
             tasks.map((task) => (
