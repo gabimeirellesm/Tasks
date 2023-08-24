@@ -59,21 +59,20 @@ function Card() {
   }, [editedTask]);
 
   const handleDeleteTask = async () => {
-    if (isEditing) {
-      console.log("taskData", taskData.id);
-      const taskId = taskData.id;
-      try {
-        await axios.delete(
-          `https://64e48df4c555638029136b4f.mockapi.io/tasks/${taskId}`
-        );
-      } catch (error) {
-        console.error("Error deleting task:", error);
-      }
+    console.log("taskData", taskData.id);
+    const taskId = taskData.id;
+    try {
+      await axios.delete(
+        `https://64e48df4c555638029136b4f.mockapi.io/tasks/${taskId}`
+      );
+    } catch (error) {
+      console.error("Error deleting task:", error);
     }
   };
+
   useEffect(() => {
     handleDeleteTask();
-  }, [isEditing]);
+  }, []);
 
   const handleCancelEditedTask = () => {
     setIsEditing(false);
