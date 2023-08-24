@@ -20,7 +20,6 @@ function Card() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [newTask, setNewTask] = useState(null);
 
   /* status */
   const [selectedOptionStatus, setSelectedOptionStatus] = useState("");
@@ -80,7 +79,6 @@ function Card() {
       .then((response) => {
         const createdTask = response.data;
         setTasks([...tasks, createdTask]);
-        setNewTask(createdTask);
 
         setTitle("");
         setDescription("");
@@ -101,25 +99,33 @@ function Card() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState(null);
+  const [taskData, setTaskData] = useState([]);
 
   const handleEditTask = (task) => {
-    setEditedTask({ ...task });
+    setTaskData({ ...task });
     setIsEditing(true);
-    console.log(task.id);
   };
 
-  const [updatedAt, setUpdatedAt] = useState(null);
-
   const handleSaveEditedTask = async () => {
-    if (editedTask) {
-      const editedTaskId = editedTask.id;
+    const taskId = taskData.id;
 
+    const updatedTaskData = {
+      ...taskData,
+      ...editedTask,
+    };
+
+    if (isEditing) {
       try {
         const response = await axios.put(
-          `https://64e48df4c555638029136b4f.mockapi.io/tasks/${editedTaskId}`,
-          editedTask
+          `https://64e48df4c555638029136b4f.mockapi.io/tasks/${taskId}`,
+          updatedTaskData
         );
-        setUpdatedAt(response.data.updatedAt);
+        const updatedTasks = tasks.map((task) =>
+          task.id === taskId ? response.data : task
+        );
+
+        setTasks(updatedTasks);
+        setTaskData(response.data);
       } catch (error) {
         console.error("Error updating task:", error);
       }
@@ -131,14 +137,13 @@ function Card() {
   }, [editedTask]);
 
   const handleDeleteTask = async () => {
-    if (editedTask || newTask) {
-      try {
-        await axios.delete(
-          `https://64e48df4c555638029136b4f.mockapi.io/tasks/${editedTask.id}`
-        );
-      } catch (error) {
-        console.error("Error deleting task:", error);
-      }
+    console.log(taskData.id);
+    try {
+      await axios.delete(
+        `https://64e48df4c555638029136b4f.mockapi.io/tasks/${taskData.id}`
+      );
+    } catch (error) {
+      console.error("Error deleting task:", error);
     }
   };
 
@@ -172,7 +177,7 @@ function Card() {
             <input
               type="text"
               value={deadline}
-              placeholder="(yyyy-mm-dd)"
+              placeholder="yyyy-mm-dd"
               onChange={(e) => setDeadline(e.target.value)}
             />
           </label>
@@ -203,10 +208,8 @@ function Card() {
                 <input
                   type="text"
                   name="title"
-                  value={editedTask.title}
-                  onChange={(e) =>
-                    setEditedTask({ ...editedTask, title: e.target.value })
-                  }
+                  value={taskData.title}
+                  onChange={(e) => setEditedTask({ title: e.target.value })}
                 ></input>
               </label>
               <label>
@@ -214,10 +217,9 @@ function Card() {
                 <input
                   type="text"
                   name="description"
-                  value={editedTask.description}
+                  value={taskData.description}
                   onChange={(e) =>
                     setEditedTask({
-                      ...editedTask,
                       description: e.target.value,
                     })
                   }
@@ -228,7 +230,7 @@ function Card() {
                 <input
                   type="text"
                   name="created"
-                  value={editedTask.created}
+                  value={taskData.created}
                   readOnly
                 ></input>
               </label>
@@ -237,10 +239,8 @@ function Card() {
                 <input
                   type="text"
                   name="deadline"
-                  value={editedTask.deadline}
-                  onChange={(e) =>
-                    setEditedTask({ ...editedTask, deadline: e.target.value })
-                  }
+                  value={taskData.deadline}
+                  onChange={(e) => setEditedTask({ deadline: e.target.value })}
                 ></input>
               </label>
               <label>
@@ -248,10 +248,8 @@ function Card() {
                 <input
                   type="text"
                   name="status"
-                  value={editedTask.status}
-                  onChange={(e) =>
-                    setEditedTask({ ...editedTask, status: e.target.value })
-                  }
+                  value={taskData.status}
+                  onChange={(e) => setEditedTask({ status: e.target.value })}
                 ></input>
               </label>
               <Button onClick={handleSaveEditedTask}>Save</Button>
