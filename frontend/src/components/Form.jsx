@@ -25,6 +25,10 @@ function Form() {
     "0"
   )}-${String(currentDate.getDate()).padStart(2, "0")}`;
 
+  const refreshPage = () => {
+    window.location.reload();
+  };
+
   const handleCreateTask = () => {
     /* conditions for deadline */
     if (!isValidDate.test(deadline)) {
@@ -63,6 +67,7 @@ function Form() {
         setDescription("");
         setDeadline("");
         setSelectedOptionStatus("");
+        refreshPage();
       })
       .catch((error) => {
         console.error("Error creating task:", error);
