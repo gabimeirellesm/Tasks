@@ -28,14 +28,6 @@ const Filter = () => {
     }
   });
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [taskData, setTaskData] = useState([]);
-
-  const handleEditTask = (task) => {
-    setTaskData({ ...task });
-    setIsEditing(true);
-  };
-
   return (
     <div>
       <FilterBar>
@@ -60,7 +52,6 @@ const Filter = () => {
             <p>Created at: {task.created}</p>
             <p>Deadline: {task.deadline}</p>
             <p>Status: {task.status}</p>
-            <Button onClick={() => handleEditTask(task)}>Edit Task</Button>
           </StyledCard>
         ))}
       </FilterContainer>
@@ -106,24 +97,10 @@ const StyledCard = styled.li`
   }
 `;
 
-const Button = styled.button`
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  padding: 0.5vw 1vh;
-  cursor: pointer;
-  margin-right: 16px;
-  font-size: 70%;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
-
 const FilterContainer = styled.ul`
   display: flex;
   justify-content: space-around;
   list-style: none;
+  margin: 0;
 `;
 export default Filter;

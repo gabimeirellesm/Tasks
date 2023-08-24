@@ -61,6 +61,7 @@ function Card() {
   const handleDeleteTask = async () => {
     console.log("taskData", taskData.id);
     const taskId = taskData.id;
+
     try {
       await axios.delete(
         `https://64e48df4c555638029136b4f.mockapi.io/tasks/${taskId}`
@@ -164,8 +165,6 @@ const StyledCard = styled.div`
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   width: 10vw;
-  margin-top: 16px;
-  margin-bottom: 16px;
 
   h2 {
     margin-top: 0;
@@ -242,13 +241,13 @@ const DeleteButton = styled(Button)`
 `;
 
 const StyledGrid = styled.div`
-  width: 80vw;
   height: 80vh;
   display: grid;
+  padding: 16px;
   grid-template-rows: repeat(3, 1fr);
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  grid-column-gap: 16px;
-  grid-row-gap: 16px;
+  grid-auto-flow: column;
+  grid-column-gap: 8px;
+  grid-row-gap: 8px;
 `;
 
 export default Card;
