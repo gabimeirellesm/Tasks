@@ -20,21 +20,59 @@ function Card() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [deadline, setDeadline] = useState("");
-  const [status, setStatus] = useState("");
   const [newTask, setNewTask] = useState(null);
+
+  /* status */
+  const [selectedOptionStatus, setSelectedOptionStatus] = useState("");
+  const optionsStatus = ["Completed", "In progress", "Pending"];
+
+  const handleOptionChangeStatus = (event) => {
+    setSelectedOptionStatus(event.target.value);
+  };
+
+  /* deadline */
+  const [deadline, setDeadline] = useState("");
   const currentDate = new Date();
-  const formattedDate = `${currentDate.getFullYear()}-${String(
-    currentDate.getMonth() + 1
-  ).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
+  const isValidDate = /^\d{4}-\d{2}-\d{2}$/;
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+
+  /* created at */
+  const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(
+    2,
+    "0"
+  )}-${String(currentDate.getDate()).padStart(2, "0")}`;
 
   const handleCreateTask = () => {
+    /* conditions for deadline */
+    if (!isValidDate.test(deadline)) {
+      alert("Please enter a valid date in the format yyyy-mm-dd.");
+      return;
+    }
+
+    const [year, month, day] = deadline.split("-").map(Number);
+    const daysInMonth = new Date(year, month, 0).getDate();
+
+    if (month < 1 || month > 12) {
+      alert("Month should be between 1 and 12.");
+      return;
+    } else if (day < 1 || day > daysInMonth) {
+      alert(`Day should be between 1 and ${daysInMonth}.`);
+      return;
+    } else if (
+      year < currentYear ||
+      (year === currentYear && month - 1 < currentMonth)
+    ) {
+      alert("Deadline should be a future date in the format yyyy-mm-dd");
+      return;
+    }
+
     const taskData = {
       title: title,
       description: description,
       created: formattedDate,
       deadline: deadline,
-      status: status,
+      status: selectedOptionStatus,
     };
 
     axios
@@ -47,7 +85,7 @@ function Card() {
         setTitle("");
         setDescription("");
         setDeadline("");
-        setStatus("");
+        setSelectedOptionStatus("");
       })
       .catch((error) => {
         console.error("Error creating task:", error);
@@ -58,7 +96,7 @@ function Card() {
     setTitle("");
     setDescription("");
     setDeadline("");
-    setStatus("");
+    setSelectedOptionStatus("");
   };
 
   const [isEditing, setIsEditing] = useState(false);
@@ -134,18 +172,23 @@ function Card() {
             <input
               type="text"
               value={deadline}
+              placeholder="(yyyy-mm-dd)"
               onChange={(e) => setDeadline(e.target.value)}
             />
           </label>
           <br />
-          <label>
-            Status:
-            <input
-              type="text"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-            />
-          </label>
+          <label>Status:</label>
+          <select
+            value={selectedOptionStatus}
+            onChange={handleOptionChangeStatus}
+          >
+            <option value="status">Select an option</option>
+            {optionsStatus.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
           <br />
           <Button type="button" onClick={handleCreateTask}>
             Create Task
@@ -278,6 +321,14 @@ const StyledForm = styled.form`
   }
 
   textarea {
+    width: 90%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-bottom: 16px;
+  }
+
+  select {
     width: 90%;
     padding: 8px;
     border: 1px solid #ccc;
