@@ -21,10 +21,11 @@ const Filter = () => {
   const optionsStatus = ["Completed", "In progress", "Pending"];
 
   const filteredTasks = tasks.filter((task) => {
-    if (selectedStatus === "") {
-      return true;
+    if (selectedStatus === "none") {
+      return false;
+    } else {
+      return task.status === selectedStatus;
     }
-    return task.status === selectedStatus;
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -43,7 +44,7 @@ const Filter = () => {
           value={selectedStatus}
           onChange={(e) => setSelectedStatus(e.target.value)}
         >
-          <option>None</option>
+          <option value="none">None</option>
           {optionsStatus.map((option) => (
             <option key={option} value={option}>
               {option}
