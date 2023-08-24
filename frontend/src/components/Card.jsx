@@ -21,13 +21,15 @@ function Card() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  /* status */
-  const [selectedOptionStatus, setSelectedOptionStatus] = useState("");
-  const optionsStatus = ["Completed", "In progress", "Pending"];
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTask, setEditedTask] = useState(null);
+  const [taskData, setTaskData] = useState([]);
 
-  const handleOptionChangeStatus = (event) => {
-    setSelectedOptionStatus(event.target.value);
-  };
+  /* status */
+  const optionsStatus = ["Completed", "In progress", "Pending"];
+  const [selectedOptionStatus, setSelectedOptionStatus] = useState(
+    taskData.status || ""
+  );
 
   /* deadline */
   const [deadline, setDeadline] = useState("");
@@ -96,10 +98,6 @@ function Card() {
     setDeadline("");
     setSelectedOptionStatus("");
   };
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedTask, setEditedTask] = useState(null);
-  const [taskData, setTaskData] = useState([]);
 
   const handleEditTask = (task) => {
     setTaskData({ ...task });
@@ -185,7 +183,7 @@ function Card() {
           <label>Status:</label>
           <select
             value={selectedOptionStatus}
-            onChange={handleOptionChangeStatus}
+            onChange={(e) => setSelectedOptionStatus(e.target.value)}
           >
             <option value="status">Select an option</option>
             {optionsStatus.map((option, index) => (
@@ -243,15 +241,17 @@ function Card() {
                   onChange={(e) => setEditedTask({ deadline: e.target.value })}
                 ></input>
               </label>
-              <label>
-                Status
-                <input
-                  type="text"
-                  name="status"
-                  value={taskData.status}
-                  onChange={(e) => setEditedTask({ status: e.target.value })}
-                ></input>
-              </label>
+              <label>Status:</label>
+              <select
+                value={taskData.status}
+                onChange={(e) => setEditedTask({ status: e.target.value })}
+              >
+                {optionsStatus.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
               <Button onClick={handleSaveEditedTask}>Save</Button>
               <Button onClick={handleCancelEditedTask}>Cancel</Button>
               <DeleteButton onClick={handleDeleteTask}>Delete</DeleteButton>
