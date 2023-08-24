@@ -20,24 +20,17 @@ function Card() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedTask, setEditedTask] = useState(null);
-  const [taskData, setTaskData] = useState([]);
-
   /* status */
   const optionsStatus = ["Completed", "In progress", "Pending"];
-  const [selectedOptionStatus, setSelectedOptionStatus] = useState(
-    taskData.status || ""
-  );
-
+  const [selectedOptionStatus, setSelectedOptionStatus] = useState("");
   /* deadline */
   const [deadline, setDeadline] = useState("");
   const currentDate = new Date();
   const isValidDate = /^\d{4}-\d{2}-\d{2}$/;
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
-
+  const [year, month, day] = deadline.split("-").map(Number);
+  const daysInMonth = new Date(year, month, 0).getDate();
   /* created at */
   const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(
     2,
@@ -50,10 +43,6 @@ function Card() {
       alert("Please enter a valid date in the format yyyy-mm-dd.");
       return;
     }
-
-    const [year, month, day] = deadline.split("-").map(Number);
-    const daysInMonth = new Date(year, month, 0).getDate();
-
     if (month < 1 || month > 12) {
       alert("Month should be between 1 and 12.");
       return;
@@ -98,6 +87,9 @@ function Card() {
     setDeadline("");
     setSelectedOptionStatus("");
   };
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTask, setEditedTask] = useState(null);
+  const [taskData, setTaskData] = useState([]);
 
   const handleEditTask = (task) => {
     setTaskData({ ...task });
@@ -133,6 +125,14 @@ function Card() {
   useEffect(() => {
     handleSaveEditedTask();
   }, [editedTask]);
+
+  /*   useEffect(() => {
+      async function deleteTask() {
+          await axios.delete(`https://64e48df4c555638029136b4f.mockapi.io/tasks/${taskData.id}`);
+      }
+
+      deleteTask();
+  }, []); */
 
   const handleDeleteTask = async () => {
     console.log(taskData.id);
@@ -241,17 +241,19 @@ function Card() {
                   onChange={(e) => setEditedTask({ deadline: e.target.value })}
                 ></input>
               </label>
-              <label>Status:</label>
-              <select
-                value={taskData.status}
-                onChange={(e) => setEditedTask({ status: e.target.value })}
-              >
-                {optionsStatus.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              <label>
+                Status:
+                <select
+                  value={taskData.status}
+                  onChange={(e) => setEditedTask({ status: e.target.value })}
+                >
+                  {optionsStatus.map((option, index) => (
+                    <option key={index} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <Button onClick={handleSaveEditedTask}>Save</Button>
               <Button onClick={handleCancelEditedTask}>Cancel</Button>
               <DeleteButton onClick={handleDeleteTask}>Delete</DeleteButton>
