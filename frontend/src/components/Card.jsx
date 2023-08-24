@@ -5,6 +5,7 @@ import axios from "axios";
 
 function Card() {
   const [tasks, setTasks] = useState([]);
+  const optionsStatus = ["Completed", "In progress", "Pending"];
 
   useEffect(() => {
     axios
@@ -18,75 +19,6 @@ function Card() {
       });
   }, []);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  /* status */
-  const optionsStatus = ["Completed", "In progress", "Pending"];
-  const [selectedOptionStatus, setSelectedOptionStatus] = useState("");
-  /* deadline */
-  const [deadline, setDeadline] = useState("");
-  const currentDate = new Date();
-  const isValidDate = /^\d{4}-\d{2}-\d{2}$/;
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth();
-  const [year, month, day] = deadline.split("-").map(Number);
-  const daysInMonth = new Date(year, month, 0).getDate();
-  /* created at */
-  const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(
-    2,
-    "0"
-  )}-${String(currentDate.getDate()).padStart(2, "0")}`;
-
-  const handleCreateTask = () => {
-    /* conditions for deadline */
-    if (!isValidDate.test(deadline)) {
-      alert("Please enter a valid date in the format yyyy-mm-dd.");
-      return;
-    }
-    if (month < 1 || month > 12) {
-      alert("Month should be between 1 and 12.");
-      return;
-    } else if (day < 1 || day > daysInMonth) {
-      alert(`Day should be between 1 and ${daysInMonth}.`);
-      return;
-    } else if (
-      year < currentYear ||
-      (year === currentYear && month - 1 < currentMonth)
-    ) {
-      alert("Deadline should be a future date in the format yyyy-mm-dd");
-      return;
-    }
-
-    const taskData = {
-      title: title,
-      description: description,
-      created: formattedDate,
-      deadline: deadline,
-      status: selectedOptionStatus,
-    };
-
-    axios
-      .post("https://64e48df4c555638029136b4f.mockapi.io/tasks", taskData)
-      .then((response) => {
-        const createdTask = response.data;
-        setTasks([...tasks, createdTask]);
-
-        setTitle("");
-        setDescription("");
-        setDeadline("");
-        setSelectedOptionStatus("");
-      })
-      .catch((error) => {
-        console.error("Error creating task:", error);
-      });
-  };
-
-  const handleCancelCreateTask = () => {
-    setTitle("");
-    setDescription("");
-    setDeadline("");
-    setSelectedOptionStatus("");
-  };
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState(null);
   const [taskData, setTaskData] = useState([]);
@@ -126,14 +58,6 @@ function Card() {
     handleSaveEditedTask();
   }, [editedTask]);
 
-  /*   useEffect(() => {
-      async function deleteTask() {
-          await axios.delete(`https://64e48df4c555638029136b4f.mockapi.io/tasks/${taskData.id}`);
-      }
-
-      deleteTask();
-  }, []); */
-
   const handleDeleteTask = async () => {
     console.log(taskData.id);
     try {
@@ -151,127 +75,79 @@ function Card() {
 
   return (
     <div>
-      <StyledContainer>
-        <StyledForm>
-          <label>
-            Title:
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </label>
-          <br />
-          <label>
-            Description:
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </label>
-          <br />
-          <label>
-            Deadline:
-            <input
-              type="text"
-              value={deadline}
-              placeholder="yyyy-mm-dd"
-              onChange={(e) => setDeadline(e.target.value)}
-            />
-          </label>
-          <br />
-          <label>Status:</label>
-          <select
-            value={selectedOptionStatus}
-            onChange={(e) => setSelectedOptionStatus(e.target.value)}
-          >
-            <option value="status">Select an option</option>
-            {optionsStatus.map((option, index) => (
-              <option key={index} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <br />
-          <Button type="button" onClick={handleCreateTask}>
-            Create Task
-          </Button>
-          <DeleteButton onClick={handleCancelCreateTask}>Clear</DeleteButton>
-        </StyledForm>
-        <StyledGrid>
-          {isEditing ? (
-            <StyledForm>
-              <label>
-                Title:
-                <input
-                  type="text"
-                  name="title"
-                  value={taskData.title}
-                  onChange={(e) => setEditedTask({ title: e.target.value })}
-                ></input>
-              </label>
-              <label>
-                Description:
-                <input
-                  type="text"
-                  name="description"
-                  value={taskData.description}
-                  onChange={(e) =>
-                    setEditedTask({
-                      description: e.target.value,
-                    })
-                  }
-                ></input>
-              </label>
-              <label>
-                Created at:
-                <input
-                  type="text"
-                  name="created"
-                  value={taskData.created}
-                  readOnly
-                ></input>
-              </label>
-              <label>
-                Deadline:
-                <input
-                  type="text"
-                  name="deadline"
-                  value={taskData.deadline}
-                  onChange={(e) => setEditedTask({ deadline: e.target.value })}
-                ></input>
-              </label>
-              <label>
-                Status:
-                <select
-                  value={taskData.status}
-                  onChange={(e) => setEditedTask({ status: e.target.value })}
-                >
-                  {optionsStatus.map((option, index) => (
-                    <option key={index} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <Button onClick={handleSaveEditedTask}>Save</Button>
-              <Button onClick={handleCancelEditedTask}>Cancel</Button>
-              <DeleteButton onClick={handleDeleteTask}>Delete</DeleteButton>
-            </StyledForm>
-          ) : (
-            tasks.map((task) => (
-              <StyledCard key={task.id}>
-                <h2>{task.title}</h2>
-                <p>{task.description}</p>
-                <p>Created at: {task.created}</p>
-                <p>Deadline: {task.deadline}</p>
-                <p>Status: {task.status}</p>
-                <Button onClick={() => handleEditTask(task)}>Edit Task</Button>
-              </StyledCard>
-            ))
-          )}
-        </StyledGrid>
-      </StyledContainer>
+      <StyledGrid>
+        {isEditing ? (
+          <StyledForm>
+            <label>
+              Title:
+              <input
+                type="text"
+                name="title"
+                value={taskData.title}
+                onChange={(e) => setEditedTask({ title: e.target.value })}
+              ></input>
+            </label>
+            <label>
+              Description:
+              <input
+                type="text"
+                name="description"
+                value={taskData.description}
+                onChange={(e) =>
+                  setEditedTask({
+                    description: e.target.value,
+                  })
+                }
+              ></input>
+            </label>
+            <label>
+              Created at:
+              <input
+                type="text"
+                name="created"
+                value={taskData.created}
+                readOnly
+              ></input>
+            </label>
+            <label>
+              Deadline:
+              <input
+                type="text"
+                name="deadline"
+                value={taskData.deadline}
+                onChange={(e) => setEditedTask({ deadline: e.target.value })}
+              ></input>
+            </label>
+            <label>
+              Status:
+              <select
+                value={taskData.status}
+                onChange={(e) => setEditedTask({ status: e.target.value })}
+              >
+                {optionsStatus.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <Button onClick={handleSaveEditedTask}>Save</Button>
+            <Button onClick={handleCancelEditedTask}>Cancel</Button>
+            <DeleteButton onClick={handleDeleteTask}>Delete</DeleteButton>
+          </StyledForm>
+        ) : (
+          tasks.map((task) => (
+            <StyledCard key={task.id}>
+              <h2>{task.title}</h2>
+              <p>{task.description}</p>
+              <p>Created at: {task.created}</p>
+              <p>Deadline: {task.deadline}</p>
+              <p>Status: {task.status}</p>
+              <Button onClick={() => handleEditTask(task)}>Edit Task</Button>
+            </StyledCard>
+          ))
+        )}
+      </StyledGrid>
     </div>
   );
 }
@@ -358,10 +234,6 @@ const DeleteButton = styled(Button)`
   &:hover {
     background-color: #c82333;
   }
-`;
-
-const StyledContainer = styled.section`
-  display: flex;
 `;
 
 const StyledGrid = styled.div`

@@ -1,16 +1,22 @@
 import React from "react";
 import Card from "../components/Card";
-import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Form from "../components/Form";
+import styled from "styled-components";
 
 function Board() {
   return (
     <div>
-      <Header />
-      <Card />
+      <StyledContainer>
+        <Form />
+        <Card />
+      </StyledContainer>
       <Footer />
     </div>
   );
 }
 
+const StyledContainer = styled.div`
+  display: flex;
+`;
 export default Board;
